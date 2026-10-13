@@ -1,0 +1,160 @@
+{{#*inline "traits"}}
+<div class="form-group">
+  <label>{{localize "PF1.SpellSchool"}}</label>
+  <div class="form-fields">
+    <multi-select name="schools">
+      {{#each schoolOptions}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+    </multi-select>
+  </div>
+</div>
+<div class="form-group">
+  <label>{{localize "PF1ESB.Rules.Subschools"}}</label>
+  <div class="form-fields">
+    <multi-select name="subschools">
+      {{#each subschoolOptions}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+    </multi-select>
+  </div>
+</div>
+<div class="form-group">
+  <label>{{localize "PF1ESB.Rules.Descriptors"}}</label>
+  <div class="form-fields">
+    <multi-select name="descriptors">
+      {{#each descriptorOptions}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+    </multi-select>
+  </div>
+</div>
+<div class="form-group">
+  <label data-tooltip="PF1ESB.Rules.DescriptorTextHint">{{localize "PF1ESB.Rules.DescriptorText"}}</label>
+  <div class="form-fields"><input type="text" name="descriptorText" value="{{descriptorText}}"></div>
+</div>
+{{/inline}}
+
+<div class="{{m}}-body">
+  <div class="{{m}}-list">
+    {{#if meta}}
+    <h3>{{localize "PF1ESB.Meta.Title"}}</h3>
+    <fieldset class="{{m}}-rule" data-meta {{#unless editable}}disabled{{/unless}}>
+      <div class="form-group">
+        <label class="checkbox"><input type="checkbox" name="enabled" {{checked meta.enabled}}> {{localize "PF1ESB.Meta.Enabled"}}</label>
+      </div>
+      {{#if meta.enabled}}
+      <div class="form-group">
+        <label data-tooltip="PF1ESB.Meta.LabelHint">{{localize "PF1ESB.Meta.Label"}}</label>
+        <div class="form-fields"><input type="text" name="label" value="{{meta.label}}" placeholder="{{metaPlaceholder}}"></div>
+      </div>
+      <div class="form-group {{m}}-numbers">
+        <label>{{localize "PF1ESB.Meta.Levels"}}</label>
+        <input type="number" name="levels" value="{{meta.levels}}" min="0" step="1">
+        <label class="checkbox" data-tooltip="PF1ESB.Meta.VariableHint"><input type="checkbox" name="variable" {{checked meta.variable}}> {{localize "PF1ESB.Meta.Variable"}}</label>
+        <label class="checkbox" data-tooltip="PF1ESB.Meta.HeightenHint"><input type="checkbox" name="heighten" {{checked meta.heighten}}> {{localize "PF1ESB.Meta.Heighten"}}</label>
+      </div>
+      <p class="hint">{{localize "PF1ESB.Meta.ScriptHint"}}</p>
+      {{/if}}
+    </fieldset>
+    {{/if}}
+
+    <h3>{{localize "PF1ESB.Rules.SlotsTitle"}}</h3>
+    <p class="hint">{{localize "PF1ESB.Rules.Hint"}}</p>
+    {{#if noRules}}<p class="hint">{{localize "PF1ESB.Rules.Empty"}}</p>{{/if}}
+
+    {{#each rules}}
+    <fieldset class="{{@root.m}}-rule" data-rule="{{id}}" {{#unless @root.editable}}disabled{{/unless}}>
+      <div class="form-group">
+        <label>{{localize "PF1ESB.Rules.Name"}}</label>
+        <div class="form-fields">
+          <input type="text" name="name" value="{{name}}">
+          {{#if @root.editable}}
+          <a class="pfesb-row-control" data-action="deleteRule" data-tooltip="PF1ESB.Rules.Delete"><i class="fa-solid fa-trash"></i></a>
+          {{/if}}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="checkbox" data-tooltip="PF1ESB.Rules.GrantedHint"><input type="checkbox" name="granted" {{checked granted}}> {{localize "PF1ESB.Rules.Granted"}}</label>
+      </div>
+
+      {{#if granted}}
+      <div class="form-group">
+        <label class="checkbox" data-tooltip="PF1ESB.Rules.FlexibleHint"><input type="checkbox" name="flexible" {{checked flexible}}> {{localize "PF1ESB.Rules.Flexible"}}</label>
+      </div>
+      {{else}}{{> traits}}{{/if}}
+
+      <div class="form-group {{@root.m}}-numbers">
+        <label data-tooltip="PF1ESB.Rules.SlotsHint">{{localize "PF1ESB.Rules.Slots"}}</label>
+        <input type="number" name="slots" value="{{slots}}" min="0" step="1">
+        <label data-tooltip="PF1ESB.Rules.KnownHint">{{localize "PF1ESB.Rules.Known"}}</label>
+        <input type="number" name="known" value="{{known}}" min="0" step="1">
+        {{#unless granted}}
+        <label data-tooltip="PF1ESB.Rules.CostHint">{{localize "PF1ESB.Rules.Cost"}}</label>
+        <input type="number" name="cost" value="{{cost}}" min="1" step="1">
+        {{/unless}}
+      </div>
+    </fieldset>
+    {{/each}}
+
+    {{#if editable}}
+    <button type="button" data-action="addRule"><i class="fa-solid fa-plus"></i> {{localize "PF1ESB.Rules.Add"}}</button>
+    {{/if}}
+
+    <h3>{{localize "PF1ESB.Sub.RulesTitle"}}</h3>
+    <p class="hint">{{localize "PF1ESB.Sub.RulesHint"}}</p>
+    {{#if noSubs}}<p class="hint">{{localize "PF1ESB.Rules.Empty"}}</p>{{/if}}
+
+    {{#each subs}}
+    <fieldset class="{{@root.m}}-rule" data-sub="{{id}}" {{#unless @root.editable}}disabled{{/unless}}>
+      <div class="form-group">
+        <label>{{localize "PF1ESB.Rules.Name"}}</label>
+        <div class="form-fields">
+          <input type="text" name="name" value="{{name}}">
+          {{#if @root.editable}}
+          <a class="pfesb-row-control" data-action="deleteSub" data-tooltip="PF1ESB.Rules.Delete"><i class="fa-solid fa-trash"></i></a>
+          {{/if}}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>{{localize "PF1ESB.Sub.Kind.Label"}}</label>
+        <div class="form-fields">
+          <select name="kind">
+            {{#each kinds}}<option value="{{value}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+          </select>
+        </div>
+      </div>
+
+      {{#if byName}}
+      <div class="form-group">
+        <label>{{localize "PF1ESB.Sub.Text"}}</label>
+        <div class="form-fields"><input type="text" name="text" value="{{text}}"></div>
+      </div>
+      {{/if}}
+
+      {{#if byTraits}}{{> traits}}{{/if}}
+
+      {{#if bySpells}}
+      <ol class="{{@root.m}}-spells">
+        {{#each spells}}
+        <li data-uuid="{{uuid}}">
+          <span>{{name}}</span>
+          {{#if @root.editable}}
+          <a class="pfesb-row-control" data-action="removeSpell" data-tooltip="PF1ESB.Prep.Remove"><i class="fa-solid fa-xmark"></i></a>
+          {{/if}}
+        </li>
+        {{/each}}
+      </ol>
+      <p class="hint">{{localize "PF1ESB.Sub.DropHint"}}</p>
+      {{/if}}
+
+      <div class="form-group">
+        <label class="checkbox"><input type="checkbox" name="sacrificeDomain" {{checked sacrificeDomain}}> {{localize "PF1ESB.Sub.SacrificeDomain"}}</label>
+      </div>
+    </fieldset>
+    {{/each}}
+
+    {{#if editable}}
+    <button type="button" data-action="addSub"><i class="fa-solid fa-plus"></i> {{localize "PF1ESB.Sub.Add"}}</button>
+    {{/if}}
+  </div>
+  <footer class="{{m}}-footer">
+    <button type="button" data-action="closeWindow"><i class="fa-solid fa-xmark"></i> {{localize "PF1ESB.Rules.Close"}}</button>
+  </footer>
+</div>

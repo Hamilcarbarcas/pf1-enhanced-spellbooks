@@ -1,0 +1,113 @@
+<div class="{{m}}-body">
+  {{#if choose}}
+  <div class="form-group">
+    <label>{{localize "PF1ESB.Book.Item"}}</label>
+    <div class="form-fields">
+      <select class="{{m}}-primary" {{#unless editable}}disabled{{/unless}}>
+        <option value="">{{localize "PF1ESB.Access.None"}}</option>
+        {{#each sources}}
+        <option value="{{uuid}}">{{name}}</option>
+        {{/each}}
+      </select>
+    </div>
+  </div>
+  {{/if}}
+
+  {{#if note}}<p class="hint">{{note}}</p>{{/if}}
+
+  {{#if source}}
+  <header class="{{m}}-head">
+    <div class="pfesb-book-facts">
+      {{#if bookChoices}}
+      <select class="{{m}}-pick">
+        {{#each bookChoices}}<option value="{{uuid}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+      </select>
+      {{else}}
+      <span><strong>{{name}}</strong>{{#if ownTag}} <span class="pfesb-own-tag">{{ownTag}}</span>{{/if}}</span>
+      {{/if}}
+      <span><strong>{{localize "PF1ESB.Book.Type"}}</strong> {{type}}</span>
+      {{#if owner}}<span><strong>{{localize "PF1ESB.Source.Owner"}}</strong> {{owner}}</span>{{/if}}
+      <span><strong>{{localize "PF1ESB.Book.Spells"}}</strong> {{total}}</span>
+      {{#if pages}}<span class="{{#if pagesOver}}pfesb-over{{/if}}"><strong>{{localize "PF1ESB.Book.Pages"}}</strong> {{pages}}</span>{{/if}}
+    </div>
+    <div class="{{m}}-actions">
+      {{#if canReset}}
+      <button type="button" data-action="resetChecks" data-tooltip="PF1ESB.Borrow.ResetHint"><i class="fa-solid fa-rotate-left"></i> {{localize "PF1ESB.Borrow.Reset"}}</button>
+      {{/if}}
+      {{#if canAdopt}}
+      <button type="button" data-action="adopt"><i class="fa-solid fa-bookmark"></i> {{localize "PF1ESB.Book.Adopt"}}</button>
+      {{/if}}
+      {{#if editable}}
+      <button type="button" data-action="browse"><i class="fa-solid fa-folder-plus"></i> {{localize "PF1ESB.Book.Browse"}}</button>
+      {{/if}}
+      {{#unless known}}<button type="button" data-action="prepare" {{#unless canPrepare}}disabled{{/unless}}><i class="fa-solid fa-list-check"></i> {{localize "PF1ESB.Book.Prepare"}}</button>{{/unless}}
+    </div>
+  </header>
+  {{#if warning}}<p class="{{m}}-warning">{{warning}}</p>{{/if}}
+
+  <div class="{{m}}-scroll">
+    <div class="{{m}}-list">
+      {{#each levels}}
+      <section class="pfesb-level{{#if collapsed}} pfesb-collapsed{{/if}}{{#if uncastable}} pfesb-uncastable{{/if}}" data-level="{{level}}">
+        <h4 class="pfesb-level-head" data-action="toggleLevel">
+          <i class="fa-solid fa-caret-down"></i>
+          <span class="pfesb-level-label">{{label}}</span>
+          <span class="pfesb-level-count">{{count}}</span>
+          {{#if @root.editable}}
+          <a class="pfesb-row-control" data-action="browse" data-tooltip="PF1.BrowseSpells"><i class="fa-solid fa-folder-plus"></i></a>
+          {{/if}}
+        </h4>
+        <ol class="pfesb-level-rows">
+          {{#each entries}}
+          <li class="pfesb-row{{#unless onList}} pfesb-offlist{{/unless}}{{#if failed}} pfesb-barred-row{{/if}}{{#if unknown}} pfesb-unknown-row{{/if}}" data-entry="{{id}}" data-uuid="{{uuid}}" data-name="{{name}}">
+            <img src="{{img}}" alt="">
+            <a class="pfesb-row-name" data-action="expand">{{name}}</a>
+            {{#unless onList}}<i class="fa-solid fa-triangle-exclamation pfesb-offlist-icon" data-tooltip="PF1ESB.Book.OffList"></i>{{/unless}}
+            {{#if uncastable}}<i class="fa-solid fa-triangle-exclamation pfesb-offlist-icon" data-tooltip="PF1ESB.Book.Uncastable"></i>{{/if}}
+            {{#if @root.borrowed}}
+            <a class="pfesb-check pfesb-check-{{check}}" {{#if @root.editable}}data-action="check"{{/if}} data-tooltip="{{checkTip}}"><i class="fa-solid {{checkIcon}}"></i></a>
+            {{/if}}
+            {{#if @root.editable}}{{#unless @root.known}}
+            <a class="pfesb-mark{{#if combat}} pfesb-on{{/if}}" data-action="markDefault" data-mark="combat" data-tooltip="PF1.QuickCombat"><i class="fa-solid fa-sword"></i></a>
+            <a class="pfesb-mark{{#if quick}} pfesb-on{{/if}}" data-action="markDefault" data-mark="quick" data-tooltip="PF1.Quickbar"><i class="fa-solid fa-bolt"></i></a>
+            {{#if @root.canMemory}}
+            <a class="pfesb-mark{{#if memory}} pfesb-on{{/if}}" data-action="memory" data-tooltip="PF1ESB.Borrow.Memory"><i class="fa-solid fa-brain"></i></a>
+            {{/if}}
+            {{/unless}}{{/if}}
+            <a class="pfesb-row-control" data-action="view" data-tooltip="PF1ESB.Book.Edit"><i class="fa-solid fa-edit"></i></a>
+            {{#if @root.editable}}
+            {{#if written}}
+            <i class="fa-solid fa-book pfesb-written-icon" data-tooltip="{{writtenTip}}"></i>
+            {{else}}
+            <a class="pfesb-row-control" data-action="forget" data-tooltip="PF1ESB.Book.Forget"><i class="fa-solid fa-trash"></i></a>
+            {{/if}}
+            {{/if}}
+          </li>
+          {{/each}}
+        </ol>
+      </section>
+      {{/each}}
+
+      {{#if missing.length}}
+      <section class="pfesb-level">
+        <h4 class="pfesb-level-head">
+          <span class="pfesb-level-label">{{localize "PF1ESB.Book.MissingGroup"}}</span>
+          <span class="pfesb-level-count">{{missing.length}}</span>
+        </h4>
+        <ol class="pfesb-level-rows">
+          {{#each missing}}
+          <li class="pfesb-row pfesb-missing" data-entry="{{id}}" data-uuid="{{uuid}}" data-name="{{name}}">
+            <span class="pfesb-row-name">{{name}}</span>
+            {{#if @root.editable}}
+            <a class="pfesb-row-control" data-action="forget" data-tooltip="PF1ESB.Book.Forget"><i class="fa-solid fa-trash"></i></a>
+            {{/if}}
+          </li>
+          {{/each}}
+        </ol>
+      </section>
+      {{/if}}
+    </div>
+    {{#if editable}}<p class="hint {{m}}-drop">{{localize "PF1ESB.Book.DropHint"}}</p>{{/if}}
+  </div>
+  {{/if}}
+</div>

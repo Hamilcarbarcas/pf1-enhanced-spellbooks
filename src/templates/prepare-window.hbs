@@ -1,0 +1,198 @@
+{{!-- The quick actions and Combat tab toggles. `action` is markLine or markDefault. --}}
+{{#*inline "marks"}}
+<a class="pfesb-mark{{#if quick}} pfesb-on{{/if}}" data-action="{{action}}" data-mark="quick" data-tooltip="PF1.Quickbar"><i class="fa-solid fa-bolt"></i></a>
+<a class="pfesb-mark{{#if combat}} pfesb-on{{/if}}" data-action="{{action}}" data-mark="combat" data-tooltip="PF1.QuickCombat"><i class="fa-solid fa-sword"></i></a>
+{{/inline}}
+
+{{!--
+  After the spell's name, three groups: what changes the loadout, icons that only
+  report, and the tools.
+--}}
+
+{{!-- One staged line on the left. --}}
+{{#*inline "line"}}
+<li class="pfesb-row" data-key="{{key}}" data-uuid="{{uuid}}" data-row="{{row}}">
+  {{#if img}}<img src="{{img}}" alt="">{{/if}}
+  <div class="pfesb-row-text">
+    <a class="pfesb-row-name" data-action="expand">{{name}}</a>
+    {{#each metaLabels}}<span class="pfesb-row-meta">{{this}}</span>{{/each}}
+  </div>
+  <span class="pfesb-col-act">
+    {{#if @root.editable}}
+    {{#if fixed}}
+    <i class="fa-solid fa-lock pfesb-row-lock" data-tooltip="PF1ESB.Prep.Fixed"></i>
+    {{else}}
+    <a class="pfesb-row-control" data-action="remove" data-tooltip="PF1ESB.Prep.Remove"><i class="fa-solid fa-xmark"></i></a>
+    {{/if}}
+    {{#unless @root.single}}
+    <a class="pfesb-row-control{{#if atFloor}}{{#if fixed}} pfesb-disabled{{/if}}{{/if}}" data-action="decrease"><i class="fa-solid fa-minus"></i></a>
+    <input type="number" class="{{@root.m}}-count" value="{{count}}" min="0" step="1">
+    <a class="pfesb-row-control{{#if atCap}} pfesb-disabled{{/if}}" data-action="increase"><i class="fa-solid fa-plus"></i></a>
+    {{/unless}}
+    {{/if}}
+  </span>
+  <span class="pfesb-col-info">
+    {{#if costly}}<span class="pfesb-row-cost" data-tooltip="PF1ESB.Prep.Cost">&times;{{cost}}</span>{{/if}}
+    {{#unless @root.editable}}<span class="pfesb-row-times">{{count}}</span>{{/unless}}
+  </span>
+  <span class="pfesb-col-tools">
+    {{#if @root.editable}}{{#if favorable}}<a class="pfesb-mark" data-action="favor" data-tooltip="PF1ESB.Prep.Favor"><i class="fa-solid fa-star"></i></a>{{/if}}{{/if}}
+    <a class="pfesb-row-control" data-action="view" data-tooltip="PF1ESB.Book.Edit"><i class="fa-solid fa-edit"></i></a>
+    {{#if @root.editable}}{{#unless fixed}}{{> marks action="markLine"}}{{/unless}}{{/if}}
+  </span>
+</li>
+{{/inline}}
+
+{{!-- One spell that can be picked, on the right. A `granted` row is a spell on the actor. --}}
+{{#*inline "pick"}}
+<li class="pfesb-row{{#if planned}} pfesb-planned{{/if}}{{#if offList}} pfesb-offlist{{/if}}{{#if barred}} pfesb-barred-row{{/if}}{{#if unknown}} pfesb-unknown-row{{/if}}" data-uuid="{{uuid}}" data-name="{{name}}" data-row="{{row}}"
+  {{#if granted}}data-item="{{itemId}}"{{/if}} {{#if rule}}data-rule="{{rule}}"{{/if}} {{#if borrowed}}data-source-id="{{sourceId}}" data-entry="{{viaEntry}}"{{/if}}
+  {{#if @root.editable}}{{#unless locked}}{{#unless needsCheck}}draggable="true"{{/unless}}{{/unless}}{{/if}}>
+  <img src="{{img}}" alt="">
+  <a class="pfesb-row-name" data-action="expand">{{name}}</a>
+  <span class="pfesb-col-act">
+    {{#if @root.editable}}{{#unless flex}}
+    {{#if needsCheck}}
+    <a class="pfesb-row-control pfesb-check-roll" data-action="check" data-tooltip="{{checkTip}}"><i class="fa-solid fa-dice-d20"></i></a>
+    {{else if granted}}
+    <a class="pfesb-row-control{{#if added}} pfesb-added{{else if addOff}} pfesb-disabled{{/if}}" data-action="addSpecial" data-tooltip="{{#if added}}PF1ESB.Prep.Added{{else}}PF1ESB.Prep.Add{{/if}}"><i class="fa-solid fa-plus"></i></a>
+    {{else if @root.canAdd}}
+    <a class="pfesb-row-control{{#if added}} pfesb-added{{else if addOff}} pfesb-disabled{{/if}}" data-action="add" data-tooltip="{{#if added}}PF1ESB.Prep.Added{{else}}PF1ESB.Prep.Add{{/if}}"><i class="fa-solid fa-plus"></i></a>
+    {{#if @root.canMeta}}
+    <a class="pfesb-row-control{{#if addOff}} pfesb-disabled{{/if}}" data-action="addMeta" data-tooltip="PF1ESB.Meta.Add"><i class="fa-solid fa-angles-up"></i></a>
+    {{/if}}
+    {{/if}}
+    {{/unless}}{{/if}}
+  </span>
+  <span class="pfesb-col-info">
+    {{#if viaIcon}}<i class="fa-solid {{viaIcon}} pfesb-via-icon{{#if barred}} pfesb-barred{{/if}}" {{#if checkState}}data-check="{{checkState}}"{{/if}} data-tooltip="{{viaTip}}"></i>{{/if}}
+    {{#if offList}}<i class="fa-solid fa-triangle-exclamation pfesb-offlist-icon" data-tooltip="PF1ESB.Book.OffList"></i>{{/if}}
+    {{#if costly}}<span class="pfesb-row-cost" data-tooltip="PF1ESB.Prep.Cost">&times;{{cost}}</span>{{/if}}
+    {{#unless @root.single}}{{#if planned}}<span class="pfesb-row-times">{{planned}}</span>{{/if}}{{/unless}}
+  </span>
+  <span class="pfesb-col-tools">
+    <a class="pfesb-row-control" data-action="view" data-tooltip="PF1ESB.Book.Edit"><i class="fa-solid fa-edit"></i></a>
+    {{#if @root.editable}}{{#unless rule}}{{> marks action="markDefault"}}{{/unless}}{{/if}}
+  </span>
+</li>
+{{/inline}}
+
+<div class="{{m}}-body">
+  <header class="{{m}}-head">
+    <div class="{{m}}-profiles">
+      {{#unless fill}}
+      <select class="{{m}}-profile" {{#unless editable}}disabled{{/unless}}>
+        <option value="">{{localize "PF1ESB.Prep.Profiles"}}</option>
+        {{#each profiles}}
+        <option value="{{id}}" {{#if selected}}selected{{/if}}>{{name}}</option>
+        {{/each}}
+      </select>
+      {{#if editable}}
+      <button type="button" data-action="loadProfile" {{#unless hasProfile}}disabled{{/unless}}>{{localize "PF1ESB.Prep.Load"}}</button>
+      <button type="button" data-action="saveProfile">{{localize "PF1ESB.Prep.Save"}}</button>
+      <button type="button" data-action="deleteProfile" {{#unless canDelete}}disabled{{/unless}}>{{localize "PF1ESB.Prep.Delete"}}</button>
+      {{/if}}
+      {{/unless}}
+    </div>
+    {{#if editable}}
+    <div class="{{m}}-commit">
+      {{#unless fill}}
+      <button type="button" data-action="clear" {{#unless hasLines}}disabled{{/unless}}>{{localize "PF1ESB.Prep.Clear"}}</button>
+      {{/unless}}
+      <button type="button" data-action="reset" {{#unless dirty}}disabled{{/unless}}>{{localize "PF1ESB.Prep.Reset"}}</button>
+      <button type="button" class="{{m}}-apply{{#if dirty}} {{m}}-dirty{{/if}}" data-action="apply" {{#if locked}}disabled data-tooltip="PF1ESB.Prep.RestOnlyNote"{{/if}}>
+        <i class="fa-solid fa-check"></i> {{applyLabel}}
+      </button>
+    </div>
+    {{/if}}
+  </header>
+
+  {{#if modeNote}}
+  <p class="{{m}}-mode">
+    {{modeNote}}
+    {{#if canDiscard}}<a data-action="discardPending">{{localize "PF1ESB.Prep.Discard"}}</a>{{/if}}
+  </p>
+  {{/if}}
+  {{#if notice}}<p class="{{m}}-warning">{{notice}}</p>{{/if}}
+
+  <div class="{{m}}-panes">
+    <section class="{{m}}-pane {{m}}-left">
+      <h3>{{localize "PF1ESB.Prep.Loadout"}}</h3>
+      <div class="{{m}}-scroll {{m}}-loadout">
+        {{#each loadout}}
+        <section class="pfesb-level{{#if collapsed}} pfesb-collapsed{{/if}}" data-side="left" data-level="{{level}}">
+          <h4 class="pfesb-level-head" data-action="toggleLevel">
+            <i class="fa-solid fa-caret-down"></i>
+            <span class="pfesb-level-label">{{label}}</span>
+            <span class="pfesb-level-count{{#if over}} pfesb-over{{/if}}">{{used}} / {{regular}}</span>
+            {{#if @root.open}}
+            <a class="pfesb-row-control" data-action="browse" data-tooltip="PF1.BrowseSpells"><i class="fa-solid fa-folder-plus"></i></a>
+            {{/if}}
+          </h4>
+          <div class="pfesb-level-rows">
+            {{#each groups}}
+            <h5 class="pfesb-sub-head">
+              <span class="pfesb-level-label">{{name}}</span>
+              {{#if flexible}}
+              <span class="pfesb-level-count">{{capacity}}</span>
+              {{else}}
+              <span class="pfesb-level-count{{#if over}} pfesb-over{{/if}}">{{used}} / {{capacity}}</span>
+              {{/if}}
+            </h5>
+            <ol class="pfesb-rows pfesb-sub-rows">
+              {{#if flexible}}<li class="pfesb-row pfesb-flex-note">{{localize "PF1ESB.Prep.Flexible"}}</li>{{/if}}
+              {{#each lines}}{{> line}}{{/each}}
+            </ol>
+            {{/each}}
+            <ol class="pfesb-rows">
+              {{#each lines}}{{> line}}{{/each}}
+            </ol>
+          </div>
+        </section>
+        {{/each}}
+      </div>
+    </section>
+
+    <section class="{{m}}-pane {{m}}-right">
+      <h3 class="{{m}}-book-head">
+        {{#if bookChoices}}
+        <span>{{bookLabel}}:</span>
+        <select class="{{m}}-source">
+          {{#each bookChoices}}<option value="{{id}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+        </select>
+        {{else if bookSingle}}
+        <span>{{bookLabel}}: {{bookSingle.name}}</span>
+        <span class="pfesb-own-tag">{{bookSingle.tag}}</span>
+        {{else}}
+        <span>{{bookLabel}}</span>
+        {{/if}}
+      </h3>
+      <input type="search" class="{{m}}-filter" value="{{filter}}" placeholder="{{localize 'PF1ESB.Prep.Filter'}}" autocomplete="off">
+      <div class="{{m}}-scroll {{m}}-book">
+        {{#if bookEmpty}}<p class="hint">{{emptyLabel}}</p>{{/if}}
+        <div class="{{m}}-book-list">
+        {{#each book}}
+        <section class="pfesb-level{{#if collapsed}} pfesb-collapsed{{/if}}" data-side="right" data-level="{{level}}">
+          <h4 class="pfesb-level-head" data-action="toggleLevel">
+            <i class="fa-solid fa-caret-down"></i>
+            <span class="pfesb-level-label">{{label}}</span>
+            <span class="pfesb-level-count">{{count}}</span>
+          </h4>
+          <div class="pfesb-level-rows">
+            {{#each groups}}
+            <h5 class="pfesb-sub-head"><span class="pfesb-level-label">{{name}}</span></h5>
+            <ol class="pfesb-rows pfesb-sub-rows">
+              {{#each rows}}{{> pick}}{{/each}}
+            </ol>
+            {{/each}}
+            <ol class="pfesb-rows">
+              {{#each entries}}{{> pick}}{{/each}}
+            </ol>
+          </div>
+        </section>
+        {{/each}}
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

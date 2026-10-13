@@ -1,0 +1,896 @@
+/* Every selector in this file is scoped to one of the module's own containers:
+   .pfesb-source     settings section on a spellbook item's Details tab
+   .pfesb-spells-tab Spells tab on a spellbook item's sheet
+   .pfesb-managed    Spells tab of a book that has a Spellbook
+   .pfesb-book       the Spellbook window
+   .pfesb-prep       the Prepare Spells window
+   .pfesb-rules      the rule editor
+   .pfesb-sacrifice  the prompt for which spell to give up
+   .pfesb-meta       the prompt for which metamagics to apply */
+
+/* Spells tab of a book that has a Spellbook (DESIGN.md §5.7). */
+
+.pfesb-managed > .pfesb-bar {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.pfesb-managed > .pfesb-bar :is(.pfesb-open, .pfesb-prepare) {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+  padding: 0.15rem 0.75rem;
+  line-height: 1.4;
+  font-size: var(--font-size-14);
+}
+
+.pfesb-managed li.item.pfesb-unprepared {
+  display: none;
+}
+
+.pfesb-managed.pfesb-show-unprepared li.item.pfesb-unprepared {
+  display: flex;
+  opacity: 0.6;
+}
+
+/* A spell with nothing prepared that can be cast by substitution: only that button. §15 */
+.pfesb-managed li.item.pfesb-sub-only .item-action.action.roll {
+  display: none;
+}
+
+.pfesb-managed li.item .pfesb-sub-cast {
+  color: var(--color-warm-1, #ee9b3a);
+}
+
+/* A flexible slot's stand-in has nothing of its own to use, only a spell to choose. §17 */
+.pfesb-managed li.item.pfesb-flex .item-action.action.roll {
+  display: none;
+}
+
+.pfesb-managed li.item .pfesb-flex-cast {
+  color: var(--color-warm-1, #ee9b3a);
+}
+
+/* Preparation is set from the Spellbook. Uses left stay editable. */
+.pfesb-managed li.item .spell-uses .text-box[data-type="max"],
+.pfesb-managed li.item .spell-uses .item-toggle-prepared {
+  pointer-events: none;
+}
+
+/* Spell lists, shared by both windows and the item sheet's Spells tab (DESIGN.md §13.7). */
+
+:is(.pfesb-book, .pfesb-prep, .pfesb-spells-tab) .pfesb-level {
+  margin-bottom: 0.5rem;
+  /* A level stays whole when the list flows into columns. */
+  break-inside: avoid;
+}
+
+:is(.pfesb-book, .pfesb-prep, .pfesb-spells-tab) .pfesb-level-head,
+.pfesb-prep .pfesb-sub-head {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0.2rem 0.35rem;
+  border-bottom: 1px solid var(--color-border-light-2, rgba(127, 127, 127, 0.4));
+}
+
+:is(.pfesb-book, .pfesb-prep) .pfesb-level-head[data-action] {
+  cursor: pointer;
+  user-select: none;
+}
+
+:is(.pfesb-book, .pfesb-prep) .pfesb-level-head > i {
+  flex: 0 0 auto;
+  width: 1em;
+  text-align: center;
+  transition: transform 120ms ease;
+}
+
+:is(.pfesb-book, .pfesb-prep) .pfesb-collapsed .pfesb-level-head > i {
+  transform: rotate(-90deg);
+}
+
+:is(.pfesb-book, .pfesb-prep, .pfesb-spells-tab) .pfesb-level-label {
+  flex: 1;
+}
+
+:is(.pfesb-book, .pfesb-prep, .pfesb-spells-tab) .pfesb-level-count {
+  flex: 0 0 auto;
+  font-size: var(--font-size-12);
+  font-weight: normal;
+  opacity: 0.8;
+}
+
+:is(.pfesb-book, .pfesb-prep, .pfesb-spells-tab) .pfesb-over {
+  color: var(--color-level-error, #c9593f);
+  font-weight: bold;
+  opacity: 1;
+}
+
+:is(.pfesb-book, .pfesb-prep, .pfesb-spells-tab) :is(.pfesb-level-rows, .pfesb-rows) {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+:is(.pfesb-book, .pfesb-prep) .pfesb-collapsed .pfesb-level-rows {
+  display: none;
+}
+
+:is(.pfesb-book, .pfesb-prep, .pfesb-spells-tab) .pfesb-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.15rem 0.35rem;
+  border-radius: 4px;
+}
+
+:is(.pfesb-book, .pfesb-prep) .pfesb-row[hidden] {
+  display: none;
+}
+
+:is(.pfesb-book, .pfesb-prep, .pfesb-spells-tab) .pfesb-row:hover {
+  background: rgba(127, 127, 127, 0.15);
+}
+
+:is(.pfesb-book, .pfesb-prep, .pfesb-spells-tab) .pfesb-row > img {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  border: none;
+  object-fit: cover;
+}
+
+:is(.pfesb-book, .pfesb-prep, .pfesb-spells-tab) .pfesb-row-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:is(.pfesb-book, .pfesb-spells-tab) .pfesb-row.pfesb-missing .pfesb-row-name {
+  font-style: italic;
+  opacity: 0.6;
+}
+
+:is(.pfesb-book, .pfesb-prep) .pfesb-row-control {
+  flex: 0 0 auto;
+  width: 1.4em;
+  text-align: center;
+  font-size: var(--font-size-13);
+  opacity: 0.75;
+}
+
+:is(.pfesb-book, .pfesb-prep) .pfesb-row-control:hover {
+  opacity: 1;
+}
+
+.pfesb-prep .pfesb-row-control.pfesb-disabled {
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+/* Book facts: the line of type, spell count, and pages. */
+
+:is(.pfesb-book, .pfesb-spells-tab) .pfesb-book-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1.5rem;
+  margin: 0.25rem 0 0.5rem;
+}
+
+/* The item sheet's Spells tab. Kept tight: a level is only as tall as what it holds. */
+
+.pfesb-spells-tab .pfesb-spells-open {
+  width: 100%;
+  margin-bottom: 0.35rem;
+}
+
+.pfesb-spells-tab .pfesb-spells-list {
+  columns: 2;
+  column-gap: 1rem;
+}
+
+.pfesb-spells-tab .pfesb-level {
+  flex: none;
+  height: auto;
+  min-height: 0;
+  margin-bottom: 0.25rem;
+}
+
+.pfesb-spells-tab .pfesb-level-head {
+  padding: 0.1rem 0.25rem;
+  font-size: var(--font-size-14);
+  line-height: 1.3;
+}
+
+.pfesb-spells-tab .pfesb-row {
+  padding: 0.05rem 0.25rem;
+}
+
+.pfesb-spells-tab .pfesb-row > img {
+  width: 20px;
+  height: 20px;
+}
+
+/* The Spellbook window. */
+
+.pfesb-book .pfesb-book-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  height: 100%;
+  min-height: 0;
+}
+
+.pfesb-book .pfesb-book-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.pfesb-book .pfesb-book-head .pfesb-book-facts {
+  margin: 0;
+}
+
+.pfesb-book .pfesb-book-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.pfesb-book .pfesb-book-actions button {
+  flex: none;
+  width: auto;
+  white-space: nowrap;
+}
+
+:is(.pfesb-book .pfesb-book-warning, .pfesb-prep .pfesb-prep-warning) {
+  margin: 0;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--color-level-warning, #c9a03f);
+  border-radius: 4px;
+}
+
+.pfesb-book .pfesb-book-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* As many columns as fit, each about the width of a one-column window. §13.9 */
+.pfesb-book .pfesb-book-list {
+  column-width: 24rem;
+  column-gap: 1.25rem;
+}
+
+/* A spell's name opens its details, in both windows. */
+:is(.pfesb-book, .pfesb-prep) .pfesb-row-name[data-action="expand"] {
+  cursor: pointer;
+}
+
+/* A spell's details, opened under its row. */
+:is(.pfesb-book, .pfesb-prep) .pfesb-summary {
+  flex: 0 0 100%;
+  padding: 0.35rem 0.5rem 0.5rem 2rem;
+  font-size: var(--font-size-13);
+  white-space: normal;
+}
+
+:is(.pfesb-book, .pfesb-prep) .pfesb-summary .tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.35rem;
+}
+
+:is(.pfesb-book, .pfesb-prep) .pfesb-summary .tag-list .tag {
+  padding: 0 0.35rem;
+  border: 1px solid var(--color-border-light-2, rgba(127, 127, 127, 0.4));
+  border-radius: 3px;
+  font-size: var(--font-size-11);
+}
+
+.pfesb-book .pfesb-book-drop {
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+/* The Prepare Spells window. */
+
+.pfesb-prep .pfesb-prep-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  height: 100%;
+  min-height: 0;
+}
+
+.pfesb-prep .pfesb-prep-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.pfesb-prep :is(.pfesb-prep-profiles, .pfesb-prep-commit) {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.pfesb-prep .pfesb-prep-profiles select {
+  min-width: 11rem;
+}
+
+.pfesb-prep .pfesb-prep-head button {
+  flex: none;
+  width: auto;
+  white-space: nowrap;
+}
+
+.pfesb-prep .pfesb-prep-apply.pfesb-prep-dirty {
+  border-color: var(--color-warm-2, #c9593f);
+}
+
+.pfesb-prep .pfesb-prep-panes {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 0.75rem;
+}
+
+/* The two sides share the width until the loadout reaches its cap, then the
+   spellbook takes the rest. §13.10 */
+.pfesb-prep .pfesb-prep-pane {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-height: 0;
+  min-width: 0;
+}
+
+.pfesb-prep .pfesb-prep-left {
+  max-width: 26rem;
+}
+
+/* As many columns as the spellbook side has room for. */
+.pfesb-prep .pfesb-prep-book-list {
+  column-width: 20rem;
+  column-gap: 1rem;
+}
+
+.pfesb-prep .pfesb-prep-pane > h3 {
+  margin: 0;
+}
+
+.pfesb-prep .pfesb-prep-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* Domain or school spells: a smaller heading inside a level, its rows set in, and
+   the whole group tinted so it reads apart from the level's ordinary spells. */
+.pfesb-prep {
+  --pfesb-special: #6f9ee8;
+}
+
+.pfesb-prep .pfesb-sub-head,
+.pfesb-prep .pfesb-sub-rows {
+  margin-left: 1rem;
+  border-left: 3px solid var(--pfesb-special);
+  background: color-mix(in srgb, var(--pfesb-special) 12%, transparent);
+}
+
+.pfesb-prep .pfesb-sub-head {
+  font-size: var(--font-size-13);
+  border-bottom-color: color-mix(in srgb, var(--pfesb-special) 45%, transparent);
+}
+
+.pfesb-prep .pfesb-sub-head .pfesb-level-label,
+.pfesb-prep .pfesb-sub-rows .pfesb-row-name {
+  color: var(--pfesb-special);
+}
+
+/* Combat tab and quick actions toggles on a spell row. */
+:is(.pfesb-book, .pfesb-prep) .pfesb-mark {
+  flex: 0 0 auto;
+  width: 1.4em;
+  text-align: center;
+  font-size: var(--font-size-12);
+  opacity: 0.45;
+}
+
+:is(.pfesb-book, .pfesb-prep) .pfesb-mark:hover {
+  opacity: 0.85;
+}
+
+:is(.pfesb-book, .pfesb-prep) .pfesb-mark.pfesb-on {
+  color: var(--color-warm-1, #ee9b3a);
+  opacity: 1;
+}
+
+.pfesb-prep .pfesb-row-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* One line per metamagic applied to a prepared spell. */
+.pfesb-prep .pfesb-row-meta {
+  padding-left: 1rem;
+  font-size: var(--font-size-12);
+  font-style: italic;
+  opacity: 0.65;
+}
+
+.pfesb-prep input.pfesb-prep-count {
+  flex: 0 0 auto;
+  width: 3em;
+  text-align: center;
+}
+
+.pfesb-prep .pfesb-row-times {
+  flex: 0 0 auto;
+  min-width: 1.4em;
+  text-align: center;
+  font-size: var(--font-size-12);
+  opacity: 0.8;
+}
+
+.pfesb-prep .pfesb-row.pfesb-planned .pfesb-row-name {
+  font-weight: bold;
+}
+
+.pfesb-prep .pfesb-prep-book .pfesb-row[draggable="true"] {
+  cursor: grab;
+}
+
+/* What a spell costs in an ordinary slot, when more than one. */
+.pfesb-prep .pfesb-row-cost {
+  flex: 0 0 auto;
+  font-size: var(--font-size-12);
+  font-weight: bold;
+  color: var(--color-level-warning, #c9a03f);
+}
+
+/* The slot rule editor (DESIGN.md §14.4). */
+
+.pfesb-rules .pfesb-rules-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  height: 100%;
+  min-height: 0;
+}
+
+.pfesb-rules .pfesb-rules-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pfesb-rules .pfesb-rules-rule {
+  margin: 0;
+}
+
+.pfesb-rules .pfesb-rules-numbers {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pfesb-rules .pfesb-rules-numbers label {
+  flex: 0 0 auto;
+}
+
+.pfesb-rules .pfesb-rules-numbers input {
+  flex: 0 0 4em;
+  text-align: center;
+}
+
+.pfesb-rules .pfesb-row-control {
+  flex: 0 0 auto;
+  width: 1.6em;
+  text-align: center;
+}
+
+.pfesb-rules .pfesb-rules-list > h3 {
+  margin: 0.25rem 0 0;
+}
+
+.pfesb-rules .pfesb-rules-list > button {
+  flex: none;
+}
+
+.pfesb-rules .pfesb-rules-spells {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pfesb-rules .pfesb-rules-spells li {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.1rem 0.25rem;
+}
+
+.pfesb-rules .pfesb-rules-spells li > span {
+  flex: 1;
+}
+
+/* The prompt for which prepared spell to give up (DESIGN.md §15.2). */
+
+.pfesb-sacrifice .pfesb-sacrifice-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 22rem;
+  overflow-y: auto;
+  margin-bottom: 0.5rem;
+}
+
+.pfesb-sacrifice .pfesb-sacrifice-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.15rem 0.25rem;
+  cursor: pointer;
+}
+
+.pfesb-sacrifice .pfesb-sacrifice-row:hover {
+  background: rgba(127, 127, 127, 0.15);
+}
+
+.pfesb-sacrifice .pfesb-sacrifice-row > img {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  border: none;
+}
+
+.pfesb-sacrifice .pfesb-sacrifice-name {
+  flex: 1;
+}
+
+.pfesb-sacrifice .pfesb-sacrifice-level,
+.pfesb-sacrifice .pfesb-sacrifice-left {
+  flex: 0 0 auto;
+  font-size: var(--font-size-12);
+  opacity: 0.8;
+}
+
+/* A spell in a list that the class's own spell list doesn't name. Marked, not blocked. §16.1 */
+:is(.pfesb-book, .pfesb-prep) .pfesb-offlist .pfesb-row-name {
+  font-style: italic;
+}
+
+:is(.pfesb-book, .pfesb-prep) .pfesb-offlist-icon {
+  flex: 0 0 auto;
+  font-size: var(--font-size-11);
+  color: var(--color-level-warning, #c9a03f);
+}
+
+/* The line that stands in for a flexible group's spells on the prepared side. */
+.pfesb-prep .pfesb-flex-note {
+  font-style: italic;
+  font-size: var(--font-size-12);
+  opacity: 0.7;
+}
+
+/* What the Prepare window is doing when it is not an ordinary preparation. §18 */
+.pfesb-prep .pfesb-prep-mode {
+  margin: 0;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--pfesb-special);
+  border-radius: 4px;
+}
+
+.pfesb-prep .pfesb-prep-mode a {
+  margin-left: 0.5rem;
+  text-decoration: underline;
+}
+
+.pfesb-prep .pfesb-row-lock {
+  flex: 0 0 auto;
+  width: 1.4em;
+  text-align: center;
+  font-size: var(--font-size-11);
+  opacity: 0.5;
+}
+
+/* Metamagic (DESIGN.md §20). */
+
+.pfesb-managed li.item .pfesb-meta-cast,
+.pf1.sheet.actor .spellbook-group li.item .pfesb-meta-cast {
+  opacity: 0.8;
+}
+
+.pfesb-meta .pfesb-meta-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 20rem;
+  overflow-y: auto;
+}
+
+.pfesb-meta .pfesb-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.15rem 0.25rem;
+  cursor: pointer;
+}
+
+.pfesb-meta .pfesb-meta-row:hover {
+  background: rgba(127, 127, 127, 0.15);
+}
+
+.pfesb-meta .pfesb-meta-name {
+  flex: 1;
+}
+
+.pfesb-meta .pfesb-meta-levels,
+.pfesb-meta .pfesb-meta-row input[type="number"] {
+  flex: 0 0 3em;
+  text-align: center;
+}
+
+.pfesb-meta .pfesb-meta-summary {
+  margin: 0.5rem 0;
+  font-style: italic;
+}
+
+.pfesb-rules .pfesb-rules-numbers label.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* Borrowed spellbooks and spells held in memory (DESIGN.md §21). */
+
+.pfesb-prep .pfesb-via-icon {
+  flex: 0 0 auto;
+  font-size: var(--font-size-11);
+  opacity: 0.6;
+}
+
+.pfesb-prep .pfesb-via-icon.pfesb-barred {
+  color: var(--color-level-error, #b3413a);
+  opacity: 1;
+}
+
+/* A borrowed spell whose check failed, in either window. */
+:is(.pfesb-book, .pfesb-prep) .pfesb-row.pfesb-barred-row {
+  opacity: 0.5;
+}
+
+:is(.pfesb-book, .pfesb-prep) .pfesb-row.pfesb-barred-row .pfesb-row-name {
+  text-decoration: line-through;
+}
+
+.pfesb-book .pfesb-check {
+  flex: 0 0 auto;
+  width: 1.4em;
+  text-align: center;
+  font-size: var(--font-size-12);
+}
+
+.pfesb-book .pfesb-check.pfesb-check-none {
+  opacity: 0.35;
+}
+
+.pfesb-book .pfesb-check.pfesb-check-pass {
+  color: var(--color-level-success, #3f8f4f);
+}
+
+.pfesb-book .pfesb-check.pfesb-check-fail {
+  color: var(--color-level-error, #b3413a);
+}
+
+/* A borrowed spell the class doesn't know, in either window. */
+:is(.pfesb-book, .pfesb-prep) .pfesb-row.pfesb-unknown-row {
+  opacity: 0.5;
+}
+
+.pfesb-book .pfesb-check.pfesb-check-unknown {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.pfesb-source .pfesb-source-mine {
+  flex: 0 0 auto;
+}
+
+.pfesb-book .pfesb-written-icon {
+  flex: 0 0 auto;
+  width: 1.4em;
+  text-align: center;
+  font-size: var(--font-size-12);
+  opacity: 0.45;
+}
+
+/* The card that offers preparation after a rest (DESIGN.md §18.2). */
+.chat-message .pfesb-rest-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* This module's rows in a book's settings: the button fills its half of the row. */
+.pfesb-managed .spellbook-configuration :is(.pfesb-rules-open, .pfesb-known-open) .form-fields {
+  display: flex;
+  flex: 1;
+}
+
+.pfesb-managed .spellbook-configuration :is(.pfesb-rules-open, .pfesb-known-open) .form-fields button {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  min-height: 0;
+  padding: 0.15rem 0.5rem;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+/* The Owner row on a spellbook item: a long field and a small button. */
+.pfesb-source .form-fields input[data-key="owner"] {
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 0;
+}
+
+.pfesb-source .form-fields .pfesb-source-mine {
+  flex: 0 0 2rem;
+  width: 2rem;
+  min-width: 0;
+  padding: 0;
+}
+
+/* A level the class can't cast yet. */
+.pfesb-book .pfesb-level.pfesb-uncastable > .pfesb-level-head {
+  opacity: 0.5;
+}
+
+/* Which spellbook a window is showing, and whose it is. */
+.pfesb-prep .pfesb-prep-book-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pfesb-prep .pfesb-prep-book-head select {
+  flex: 1;
+  min-width: 0;
+  height: 2.25rem;
+  line-height: 2.25rem;
+  font-size: var(--font-size-18);
+}
+
+.pfesb-book .pfesb-book-pick {
+  width: auto;
+  max-width: 100%;
+  height: 2.25rem;
+  line-height: 2.25rem;
+  font-size: var(--font-size-18);
+  font-weight: bold;
+}
+
+:is(.pfesb-book, .pfesb-prep) .pfesb-own-tag {
+  font-size: var(--font-size-11);
+  font-weight: normal;
+  font-style: italic;
+  opacity: 0.65;
+}
+
+/* Known against the limit, on a level heading of a book that knows a set number. */
+.pf1.sheet.actor .spellbook-header .pfesb-known-count {
+  flex: 0 0 auto;
+  margin-left: auto;
+  padding: 0 0.3rem;
+  border: 1px solid var(--color-border-light-2, #999);
+  border-radius: 4px;
+  font-size: var(--font-size-12);
+  white-space: nowrap;
+}
+
+.pf1.sheet.actor .spellbook-header .pfesb-known-count.pfesb-over {
+  color: var(--color-level-error, #b3413a);
+  border-color: currentColor;
+}
+
+/* Little Helper's own count says less; this one stands in for it. */
+.pf1.sheet.actor .spellbook-header:has(.pfesb-known-count) .lil-spells-known {
+  display: none;
+}
+
+/* The rule editor: a rule's delete control sits at the end of its Name row. */
+.pfesb-rules .pfesb-rules-rule .form-fields:has(> [data-action^="delete"]) {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pfesb-rules .pfesb-rules-rule .form-fields:has(> [data-action^="delete"]) > input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.pfesb-rules .pfesb-rules-rule .form-fields > [data-action^="delete"] {
+  flex: 0 0 auto;
+  padding: 0 0.25rem;
+  font-size: var(--font-size-20);
+}
+
+/* Prepare window rows: after the name, act, report, and tools, set apart by a gap. */
+.pfesb-prep .pfesb-row :is(.pfesb-col-act, .pfesb-col-info, .pfesb-col-tools) {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.pfesb-prep .pfesb-prep-right .pfesb-row .pfesb-col-act {
+  width: 2.9em;
+  justify-content: flex-start;
+}
+
+.pfesb-prep .pfesb-prep-left .pfesb-row .pfesb-col-act {
+  min-width: 1.4em;
+}
+
+/* A little room either side of the add and remove controls. */
+.pfesb-prep .pfesb-row .pfesb-col-act {
+  margin: 0 0.4rem;
+  padding: 0 0.4rem;
+  border-right: 1px solid rgba(127, 127, 127, 0.3);
+}
+
+.pfesb-prep .pfesb-row .pfesb-col-info {
+  min-width: 2.5em;
+  justify-content: flex-end;
+}
+
+.pfesb-prep .pfesb-check-roll {
+  color: var(--color-warm-1, #ee9b3a);
+  opacity: 1;
+}
+
+.pfesb-prep .pfesb-via-icon.pfesb-passed {
+  color: var(--color-level-success, #3f8f4f);
+  opacity: 1;
+}
+
+/* A spell already staged, on a book that prepares each spell once: green, not clickable. */
+.pfesb-prep .pfesb-row-control.pfesb-added {
+  color: var(--color-level-success, #3f8f4f);
+  opacity: 1;
+  pointer-events: none;
+}
+
+/* The rule editor's Close, under the scrolling list so it is always in view. */
+.pfesb-rules .pfesb-rules-footer {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 0.25rem;
+  border-top: 1px solid rgba(127, 127, 127, 0.3);
+}
+
+.pfesb-rules .pfesb-rules-footer button {
+  flex: 0 0 auto;
+  width: auto;
+  padding: 0.15rem 1rem;
+}

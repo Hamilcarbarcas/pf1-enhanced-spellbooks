@@ -1,0 +1,53 @@
+{
+  "id": "pf1-enhanced-spellbooks",
+  "title": "PF1 Enhanced Spellbooks",
+  "description": "<p>Separates what a Pathfinder 1e caster can cast right now from where that is decided: spellbook items hold the spells a character knows, a Spellbook window handles daily preparation, and the Spells tab shows only what is prepared.</p>",
+  "authors": [
+    {
+      "name": "Hamilcarbarcas",
+      "flags": {}
+    }
+  ],
+  "version": "0.0.0",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+  "relationships": {
+    "systems": [
+      {
+        "id": "pf1",
+        "type": "system",
+        "compatibility": {
+          "minimum": "11.10",
+          "verified": "11.11"
+        }
+      }
+    ],
+    "recommends": [
+      {
+        "id": "pf1-enhanced-links",
+        "type": "module",
+        "reason": "Lets class features grant spells, change a spellbook's settings, and read another class's spell list. Without it, those are set by hand."
+      }
+    ]
+  },
+  "esmodules": [
+    "src/pf1-enhanced-spellbooks.mjs"
+  ],
+  "styles": [
+    "src/common/sheet/kit.css",
+    "src/styles/pf1-enhanced-spellbooks.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "url": "https://github.com/Hamilcarbarcas/pf1-enhanced-spellbooks",
+  "readme": "https://github.com/Hamilcarbarcas/pf1-enhanced-spellbooks/blob/main/README.md",
+  "manifest": "https://github.com/Hamilcarbarcas/pf1-enhanced-spellbooks/releases/latest/download/module.json",
+  "download": "https://github.com/Hamilcarbarcas/pf1-enhanced-spellbooks/releases/download/v0.0.0/module.zip"
+}
