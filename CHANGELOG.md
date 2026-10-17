@@ -8,6 +8,8 @@ matching each release tag.
 ### Added
 - **Spellbook** setting in a class item's Spellcasting block: None, Learned (spellbook item), or
   Whole class list. It applies to player characters with that class.
+- **Use Enhanced Spellbooks** checkbox on an actor's Settings tab, under Spellbook Usage. Ticked,
+  an NPC uses its classes' Spellbook setting; unticked, a player character does not.
 - **Spellbooks** inventory section. An item in it holds a list of spells as links to compendium
   entries. A spellbook counts as usable while it is on the character and carried, including
   inside a carried container.

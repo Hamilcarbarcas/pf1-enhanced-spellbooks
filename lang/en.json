@@ -17,6 +17,10 @@
       "Learned": "Learned (spellbook item)",
       "All": "Whole class list"
     },
+    "Actor": {
+      "Use": "Use Enhanced Spellbooks",
+      "UseHint": "Classes with a Spellbook setting use it on this actor. Default: on for player characters, off for NPCs."
+    },
     "Class": {
       "Label": "Spellbook",
       "Hint": "Where this class's spells are prepared from.",

@@ -59,7 +59,8 @@ Open a class item. In its **Spellcasting** block, set **Spellbook**:
   cleric, and keeps a list of [favored spells](#favored-spells) for quick picking.
 
 The setting applies to player characters with that class. NPCs keep the system's normal
-spellcasting.
+spellcasting unless **Use Enhanced Spellbooks** is ticked under **Spellbook Usage** on the actor's
+**Settings** tab. Unticking it on a player character turns the module off for them the same way.
 
 A class set to **Learned** also has **Reads spellbooks of**: the class tags whose spellbooks it
 can use, separated by commas. Left blank, it uses these defaults:

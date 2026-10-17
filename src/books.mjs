@@ -72,6 +72,12 @@ export function bookOverride(actor, bookId) {
   return actor?.flags?.[MODULE_ID]?.books?.[bookId] ?? {};
 }
 
+/** Whether an actor's classes use their Spellbook setting. Unset: player characters only. §13.3 */
+export function usesSpellbooks(actor) {
+  const flag = actor?.flags?.[MODULE_ID]?.useSpellbooks;
+  return typeof flag === "boolean" ? flag : actor?.type === "character";
+}
+
 /** Effective settings for one book. §13.3 */
 export function getConfig(actor, bookId) {
   const book = bookData(actor, bookId);
@@ -81,11 +87,8 @@ export function getConfig(actor, bookId) {
 
   const over = bookOverride(actor, bookId);
   const access = asAccess(over.access) ?? classAccess(bookClass(actor, bookId));
-  // Unset: on for player characters only, so an NPC sharing the class item stays stock.
-  const wanted = typeof over.managed === "boolean" ? over.managed : actor.type === "character";
-
   return {
-    managed: wanted && !!access,
+    managed: usesSpellbooks(actor) && !!access,
     access,
     mode: book.spellPreparationMode || "prepared",
     primary: over.primary ?? null,

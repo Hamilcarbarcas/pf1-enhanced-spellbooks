@@ -206,6 +206,28 @@ function preparedCount(actor, bookId, book, level) {
 }
 
 /**
+ * A spontaneous book's known spells at one level, as the system counts them: every spell
+ * with a use left, at its slot cost, Domain spells first filling the Domain pool. Counted
+ * here because the system leaves `known.used` unset on a level with no issues, a full one
+ * included. Null for a level with no limit.
+ */
+function knownCount(actor, bookId, book, level) {
+  const data = book.spells?.[`spell${level}`];
+  const max = Number(data?.known?.max);
+  if (!Number.isFinite(max)) return null;
+  let pool = level > 0 ? Math.max(0, Number(data?.domain?.max) || 0) : 0;
+  let used = 0;
+  for (const spell of actor.itemTypes?.spell ?? []) {
+    if (spell.system?.spellbook !== bookId || spell.system.level !== level || spell.system.atWill) continue;
+    if ((spell.system.preparation?.value ?? 0) <= 0) continue;
+    const cost = Math.max(1, Number(spell.slotCost ?? spell.system.slotCost) || 1);
+    if (spell.system.domain && pool > 0) pool -= cost;
+    else used += cost;
+  }
+  return { used, max };
+}
+
+/**
  * On a level's heading, how many spells it holds against how many it may: known for a
  * book that knows a set number, prepared for a hybrid book. The system only says so
  * when the two differ. Any such book, with a Spellbook or not. §25
@@ -224,18 +246,9 @@ function addKnownCounts(app, tab) {
   for (const header of tab.querySelectorAll("li.spellbook-header[data-level]")) {
     if (header.querySelector(`.${CSS}known-count`)) continue;
     const level = Number(header.dataset.level);
-    let used;
-    let max;
-    if (hybrid) {
-      const counted = preparedCount(actor, bookId, book, level);
-      if (!counted) continue;
-      ({ used, max } = counted);
-    } else {
-      const known = book.spells?.[`spell${level}`]?.known;
-      max = Number(known?.max);
-      if (!Number.isFinite(max)) continue;
-      used = Number(known.used) || 0;
-    }
+    const counted = hybrid ? preparedCount(actor, bookId, book, level) : knownCount(actor, bookId, book, level);
+    if (!counted) continue;
+    const { used, max } = counted;
 
     const badge = document.createElement("label");
     badge.className = `${CSS}known-count`;

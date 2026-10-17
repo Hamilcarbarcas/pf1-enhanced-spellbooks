@@ -3,6 +3,7 @@ import { registerCategory } from "./config.mjs";
 import { registerClassSection } from "./sheet/class-section.mjs";
 import { registerSourceSection } from "./sheet/source-section.mjs";
 import { registerSpellsTab } from "./sheet/spells-tab.mjs";
+import { registerSettingsTab } from "./sheet/settings-tab.mjs";
 import { registerRefresh } from "./apps/shared.mjs";
 import { registerOffsetSync, registerSubstitutionSync } from "./sync.mjs";
 import { registerSubstitutionNotes } from "./substitute.mjs";
@@ -18,6 +19,7 @@ Hooks.once("init", () => {
   registerClassSection();
   registerSourceSection();
   registerSpellsTab();
+  registerSettingsTab();
   registerRefresh();
   registerSubstitutionSync();
   registerOffsetSync();
