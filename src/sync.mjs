@@ -5,7 +5,7 @@
 
 import { LOG, MODULE_ID } from "./const.mjs";
 import { getManagedBooks } from "./books.mjs";
-import { syncSubstitutions } from "./prepare.mjs";
+import { isGranted, syncSubstitutions } from "./prepare.mjs";
 import { knownBonus } from "./rules.mjs";
 
 /** One pending pass per actor. */
@@ -42,6 +42,12 @@ export function registerSubstitutionSync() {
     if (userId !== game.user.id || item.type === "spell" || !item.actor) return;
     if (touchesModule(changed) || foundry.utils.hasProperty(changed ?? {}, "system.items")) queue(item.actor);
   });
+  // A feature's grant stands in for a copy of the same spell while it is there. §15.4
+  for (const hook of ["createItem", "deleteItem"]) {
+    Hooks.on(hook, (item, options, userId) => {
+      if (userId === game.user.id && item.type === "spell" && item.actor && isGranted(item)) queue(item.actor);
+    });
+  }
 }
 
 /* -------------------------------------------- */

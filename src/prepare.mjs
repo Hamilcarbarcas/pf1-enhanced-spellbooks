@@ -9,7 +9,7 @@ import { bookData, getConfig, getSlots, listTag, spellLevelFor } from "./books.m
 
 const ENHANCED_LINKS = "pf1-enhanced-links";
 import { getGroups } from "./rules.mjs";
-import { substitutionSpells } from "./substitute.mjs";
+import { activeSubs, isSubstitutable, substitutionSpells } from "./substitute.mjs";
 import { applyMetamagic, getMetamagics } from "./metamagic.mjs";
 
 const FLAG = "copy";
@@ -248,6 +248,26 @@ function markClear(update, spell) {
 }
 
 /**
+ * Whether a feature's grant already stands on the Spells tab for a spell, with its own
+ * substitution button. Matched by source or by name, since the grant and the list entry
+ * may come from different compendiums. §15.4, §24
+ *
+ * @returns {(uuid: string, name?: string) => boolean}
+ */
+function grantedCover(actor, bookId) {
+  const subs = activeSubs(actor, bookId);
+  const uuids = new Set();
+  const names = new Set();
+  for (const spell of actor?.itemTypes?.spell ?? []) {
+    if (spell.system?.spellbook !== bookId || spell.system?.domain === true || spell.system?.atWill) continue;
+    if (copyOf(spell) || !isGranted(spell) || !isSubstitutable(spell, subs)) continue;
+    if (spell._stats?.compendiumSource) uuids.add(spell._stats.compendiumSource);
+    names.add(spell.name.toLowerCase());
+  }
+  return (uuid, name) => uuids.has(uuid) || (!!name && names.has(name.toLowerCase()));
+}
+
+/**
  * What keeps the Spells tab's substitution entries in step: an unprepared copy of each
  * spell that can be cast by substitution and is not prepared in its own right. §15
  *
@@ -257,20 +277,23 @@ function markClear(update, spell) {
 async function substitutionChanges(actor, bookId, preparedUuids) {
   const wanted = new Set(await substitutionSpells(actor, bookId));
   const tag = listTag(actor, bookId);
+  const granted = grantedCover(actor, bookId);
   const toDelete = [];
   const have = new Set();
   for (const spell of getCopies(actor, bookId)) {
     const copy = copyOf(spell);
     if (!copy.sub) continue;
-    if (wanted.has(copy.uuid) && !preparedUuids.has(copy.uuid) && !have.has(copy.uuid)) have.add(copy.uuid);
+    const keep = wanted.has(copy.uuid) && !preparedUuids.has(copy.uuid) && !granted(copy.uuid, spell.name);
+    if (keep && !have.has(copy.uuid)) have.add(copy.uuid);
     else toDelete.push(spell.id);
   }
 
   const toCreate = [];
   for (const uuid of wanted) {
-    if (preparedUuids.has(uuid) || have.has(uuid)) continue;
+    if (preparedUuids.has(uuid) || have.has(uuid) || granted(uuid)) continue;
     const doc = await fromUuid(uuid).catch(() => null);
     if (doc?.documentName !== "Item" || doc.type !== "spell") continue;
+    if (granted(uuid, doc.name)) continue;
     const want = { uuid, slot: SLOT.regular, rule: null, meta: [], count: 0, cost: 1, marked: false };
     const data = await copyData(doc, want, bookId, tag);
     foundry.utils.setProperty(data, `flags.${MODULE_ID}.${FLAG}.sub`, true);

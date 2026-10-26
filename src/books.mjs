@@ -30,10 +30,25 @@ export function bookName(actor, bookId) {
   return book?.label || book?.name || bookClass(actor, bookId)?.name || bookId;
 }
 
+/** The feature whose enhanced-links Grant made a book, or null. §26 */
+export function bookGranter(actor, bookId) {
+  const records = actor?.flags?.[ENHANCED_LINKS]?.spellcastingBooks ?? {};
+  const itemId = Object.keys(records).find((id) => records[id]?.book === bookId);
+  return (itemId && actor.items?.get(itemId)) || null;
+}
+
+/**
+ * The item a book's Spellbook settings live on: the feature that granted it, else
+ * its class. The class fallback serves actors not yet moved to granted books. §26
+ */
+export function bookSource(actor, bookId) {
+  return bookGranter(actor, bookId) ?? bookClass(actor, bookId);
+}
+
 const asAccess = (value) => (value === ACCESS.learned || value === ACCESS.all ? value : null);
 
-/** The access a class item gives its book, or null. */
-export function classAccess(item) {
+/** The access an item's Spellbook setting gives its book, or null. */
+export function itemAccess(item) {
   return asAccess(item?.flags?.[MODULE_ID]?.book?.access);
 }
 
@@ -53,18 +68,17 @@ export function defaultReads(tag) {
   return tag ? [...new Set([tag, ...(DEFAULT_READS[tag] ?? [])])] : [];
 }
 
-/** The class tags whose spellbooks a class item reads: its own setting, else the default. */
-export function classReads(item) {
+/** The class tags whose spellbooks a book reads: its settings item's list, else the default for its class. */
+export function itemReads(item, tag) {
   const own = item?.flags?.[MODULE_ID]?.book?.reads;
-  const listed = typeof own === "string" ? own.split(/[,;]/).map((tag) => tag.trim()).filter(Boolean) : [];
-  return listed.length ? listed : defaultReads(item?.system?.tag);
+  const listed = typeof own === "string" ? own.split(/[,;]/).map((t) => t.trim()).filter(Boolean) : [];
+  return listed.length ? listed : defaultReads(tag);
 }
 
 /** The class tags whose spellbooks one of an actor's books may use. */
 export function readableTags(actor, bookId) {
   const tag = bookData(actor, bookId)?.class;
-  const cls = bookClass(actor, bookId);
-  return [...new Set([tag, listTag(actor, bookId), ...(cls ? classReads(cls) : defaultReads(tag))].filter(Boolean))];
+  return [...new Set([tag, listTag(actor, bookId), ...itemReads(bookSource(actor, bookId), tag)].filter(Boolean))];
 }
 
 /** The per-actor settings stored for a book. */
@@ -86,7 +100,7 @@ export function getConfig(actor, bookId) {
   }
 
   const over = bookOverride(actor, bookId);
-  const access = asAccess(over.access) ?? classAccess(bookClass(actor, bookId));
+  const access = asAccess(over.access) ?? itemAccess(bookSource(actor, bookId));
   return {
     managed: usesSpellbooks(actor) && !!access,
     access,

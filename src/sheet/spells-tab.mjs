@@ -139,9 +139,12 @@ function addFlexButton(actor, bookId, row, item) {
   cell.append(button);
 }
 
-/** The cast-by-substitution button, beside a spell's ordinary use button. */
+/**
+ * The cast-by-substitution button, where the Domain/School mark sits. Outside the use
+ * cell, since pf1-quick-actions covers that cell with its action menu on hover.
+ */
 function addSubstitutionButton(actor, bookId, row, item) {
-  const cell = row.querySelector(".item-actions .item-action") ?? row.querySelector(".item-actions");
+  const cell = row.querySelector(".spell-uses .domain-slots") ?? row.querySelector(".item-actions");
   if (!cell || cell.querySelector(`.${CSS}sub-cast`)) return;
 
   const button = document.createElement("a");

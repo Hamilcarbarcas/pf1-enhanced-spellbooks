@@ -6,8 +6,9 @@ matching each release tag.
 ## [Unreleased]
 
 ### Added
-- **Spellbook** setting in a class item's Spellcasting block: None, Learned (spellbook item), or
-  Whole class list. It applies to player characters with that class.
+- **Spellbook** setting on the class feature that grants a class's spellbook through PF1 Enhanced
+  Links (or, for a class with spellcasting of its own, in its Spellcasting block): None, Learned
+  (spellbook item), or Whole class list. It applies to player characters with that class.
 - **Use Enhanced Spellbooks** checkbox on an actor's Settings tab, under Spellbook Usage. Ticked,
   an NPC uses its classes' Spellbook setting; unticked, a player character does not.
 - **Spellbooks** inventory section. An item in it holds a list of spells as links to compendium
@@ -48,7 +49,8 @@ matching each release tag.
   settings.
 - **Substitution**: casting cure, inflict, summon nature's ally, domain, or chosen spells, or
   spells of a school or descriptor, by giving up a different prepared spell, from a lightning
-  button on the Spells tab. The spell's chat card notes what was given up. Replaces the
+  button beside a spell's uses on the Spells tab. A covered spell stays on the tab when nothing of
+  it is prepared. The spell's chat card notes what was given up. Replaces the
   Spontaneous Casting for Pathfinder 1 module.
 - **Flexible slots**: a slot rule can leave its slot open, to cast any of its group's spells
   from an entry on the Spells tab, as a shaman's Spirit Magic does.

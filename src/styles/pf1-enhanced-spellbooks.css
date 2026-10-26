@@ -40,6 +40,11 @@
   display: none;
 }
 
+/* Nothing to use there; keeps action hover menus from opening over the row. §27 */
+.pfesb-managed li.item.pfesb-sub-only .item-detail.item-actions {
+  pointer-events: none;
+}
+
 .pfesb-managed li.item .pfesb-sub-cast {
   color: var(--color-warm-1, #ee9b3a);
 }

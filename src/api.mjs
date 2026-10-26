@@ -61,6 +61,7 @@ import {
 } from "./borrow.mjs";
 import { openKnown } from "./apps/spellbook-window.mjs";
 import { syncValue } from "./sources.mjs";
+import { renderBookSettings } from "./sheet/book-settings.mjs";
 
 /** What a substitution with no name of its own is called: its kind. */
 const SUB_KIND_LABELS = {
@@ -107,6 +108,12 @@ export const api = {
   /** Slot rules that apply to a book, and the groups of special slots they make. */
   getRules,
   getGroups,
+  /**
+   * The Spellbook settings (access, reads) for the item a book's settings live on, drawn
+   * into `container`. Options: `editable`, `tag` (the book's class tag). §26
+   */
+  renderBookSettings,
+
   /** The rules stored on one feature item: slot rules, then substitution rules. */
   getItemRules: (item) => [
     ...readRules(ruleList(item)),

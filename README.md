@@ -50,7 +50,8 @@ memory or a borrowed spellbook. A spellbook item's price follows the spells in i
 
 ### Giving a class a Spellbook
 
-Open a class item. In its **Spellcasting** block, set **Spellbook**:
+Open the class feature that grants the class's spellbook (**Grant a spellbook** in PF1 Enhanced
+Links' Spellcasting section). Below the book's settings, set **Spellbook**:
 
 - **None**: the class works as it does without this module.
 - **Learned (spellbook item)**: the character prepares from the spells recorded in a spellbook
@@ -61,6 +62,9 @@ Open a class item. In its **Spellcasting** block, set **Spellbook**:
 The setting applies to player characters with that class. NPCs keep the system's normal
 spellcasting unless **Use Enhanced Spellbooks** is ticked under **Spellbook Usage** on the actor's
 **Settings** tab. Unticking it on a player character turns the module off for them the same way.
+
+A class that still has spellcasting of its own shows **Spellbook** in its **Spellcasting** block
+instead, for books no feature grants.
 
 A class set to **Learned** also has **Reads spellbooks of**: the class tags whose spellbooks it
 can use, separated by commas. Left blank, it uses these defaults:
@@ -254,14 +258,19 @@ in the same window as special slot rules, under **Substitution**.
 | **Spells** | Cure spells, inflict spells, or summon nature's ally spells, by name; spells whose name contains some text; spells by school, subschool, or descriptor; the domain or school spells on the character; or specific spells dropped onto the rule. |
 | **Domain and school spells may be given up** | Without this, a domain or school spell can't be the one given up. |
 
-A spell the rule covers shows a lightning button on the Spells tab. Clicking it asks which
-prepared spell to give up: one of the same level or higher, not a 0-level spell, with a use left.
-Backing out of that prompt, or of the cast itself, spends nothing. The spell's chat card notes
-what was given up, in its footnotes.
+A spell the rule covers shows a lightning button on the Spells tab, beside its uses, where the
+Domain/School mark goes. Clicking it asks which prepared spell to give up: one of the same level
+or higher, not a 0-level spell, with a use left. Backing out of that prompt, or of the cast
+itself, spends nothing. The spell's chat card notes what was given up, in its footnotes.
 
 A covered spell that isn't prepared still appears on the Spells tab, with only the lightning
-button. For that it has to be in the character's spellbook or favored spells, or be named in the
-rule. Domain and school spells on the character appear when a rule covers them.
+button. For that it has to be in the character's spellbook or favored spells, be named in the
+rule, or be granted by a feature. Domain and school spells on the character appear when a rule
+covers them.
+
+To show every cure spell at each level a cleric can cast, put them all in the Spontaneous Casting
+feature's **Spell Supplements** (PF1 Enhanced Links) with **Level gating** off and **Require
+castable level** on, and give the same feature a **Cure** rule.
 
 Only classes that fill slots cast this way. Turn off the *Spontaneous Casting for Pathfinder 1*
 module if you use it: this replaces it.
