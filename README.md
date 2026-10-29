@@ -84,7 +84,7 @@ container.
 A spellbook can be used while it is on the character and carried. Inside a container, it counts
 as carried when the container is.
 
-The item's **Details** tab has a **Spellbook** section with its settings:
+The item's **Advanced** tab has a **Spellbook** section with its settings:
 
 | Setting | Meaning |
 |---|---|

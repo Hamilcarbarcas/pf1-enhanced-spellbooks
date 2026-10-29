@@ -97,3 +97,6 @@ matching each release tag.
 - API at `game.modules.get("pf1-enhanced-spellbooks").api` for reading a book's settings and
   slots, adding and removing spells in a spellbook item, reading and setting a book's prepared
   spells, and opening both windows.
+
+### Changed
+- The spellbook item's **Spellbook** settings section moved from the Details tab to the Advanced tab (shared sheet kit 1.7.0).

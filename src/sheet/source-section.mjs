@@ -1,5 +1,5 @@
 /**
- * A spellbook item's sheet: its settings on the Details tab, and a Spells tab that
+ * A spellbook item's sheet: its settings on the Advanced tab, and a Spells tab that
  * lists what it holds. DESIGN.md §5.2b, §13.9.
  */
 
@@ -33,7 +33,7 @@ function className(item, tag) {
   return item.actor?.itemTypes?.class?.find((c) => c.system.tag === tag)?.name ?? tag;
 }
 
-/** The settings section on the Details tab. */
+/** The settings section on the Advanced tab. */
 function injectConfig(app, tab) {
   const item = app.item;
   tab.querySelector(`:scope > .${M}`)?.remove();
@@ -152,7 +152,6 @@ function injectConfig(app, tab) {
     configured: true,
     badge: getEntries(item).length || "",
     title: t("PF1ESB.Source.Toggle"),
-    sortKey: false,
   });
 }
 
@@ -249,8 +248,8 @@ export function registerSourceSection() {
     if (!isSource(item)) return;
     try {
       const root = html?.[0] ?? html;
-      const details = root?.querySelector?.('.tab[data-tab="details"]');
-      if (details) injectConfig(app, details);
+      const advanced = root?.querySelector?.('.tab[data-tab="advanced"]');
+      if (advanced) injectConfig(app, advanced.querySelector(":scope > .flexcol") ?? advanced);
       injectTab(app, root).catch((err) => console.error(LOG, "Spellbook item tab failed", err));
     } catch (err) {
       console.error(LOG, "Spellbook item section failed", err);
